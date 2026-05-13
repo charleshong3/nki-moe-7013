@@ -23,6 +23,8 @@ We will also be making additional credit codes available. Please reach out to us
 ### Round two: Trn3 in April
 Round two of the competition focuses on Trn3. We will take submissions from April 14-30. Each of the top 15 teams from round one will receive access to a dedicated single-chip Trn3 instance. The evaluation environment will use Neuron SDK 2.29 with a single Trn3 chip. We will not accept submissions made after April 30 11:59 PM PST.
 
+Round two submissions have closed, and the winning teams have been notified privately. All contestants are invited to submit feedback through the following form [here](https://pulse.aws/survey/50YZOCYJ).
+
 ## Submission guidelines
 1. Participants should plan to replace the `qwen_with_nki.py` file with your own kernels and model code.
 2. Participants **must contain their code within a single file**. The submission site will only accept one Python file per upload.
