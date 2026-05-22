@@ -6017,7 +6017,15 @@ def _install_nki_cte_moe_full():
     )
 
 
-_install_nki_cte_moe_full()
+# Install is deferred to `NeuronQwen3MoeForCausalLM.get_neuron_config_cls`
+# (see below). main.py compiles the baseline FIRST and our submission second,
+# so deferring the patch until our config class is touched keeps the baseline's
+# CTE bucket on the pristine vendor `torch_blockwise_matmul_inference`. The
+# team-authored CTE MoE NKI kernel pair only ever ends up in our compiled
+# graph; the two graphs are kept compatible by `_apply_symmetric_baseline_kwargs`
+# (NeuronConfig kwargs) and `_baseline_get_compiler_args_no_mpa` (strip MPA
+# from the baseline's compile flags) — i.e. we mirror the configuration the
+# kernel needs, not the kernel itself.
 
 
 # =============================================================================
@@ -10702,6 +10710,14 @@ class NeuronQwen3MoeForCausalLM(NeuronBaseForCausalLM):
         NeuronQwen3MoeForCausalLM lives in a different module and uses the
         upstream default (context_encoding_buckets = None → [128, 256, 640]).
         """
+        # Install the CTE MoE NKI kernel patch on ExpertMLPsV2 (deferred from
+        # module import). main.py compiles the baseline first and our
+        # submission second, so by the time this fires the baseline's CTE
+        # bucket has already been traced through the vendor torch blockwise
+        # matmul. Our submission's compile picks up the patched version, and
+        # the baseline graph stays on pristine vendor code.
+        _install_nki_cte_moe_full()
+
         _boost_T = NKI_CTE_BOOST_T
         _boost_on = _NKI_CTE_BOOST_ENABLED
 
